@@ -1,0 +1,1 @@
+var Player = new Entity("Player", 70, 150, 100, 150, Entity.DYNAMIC, "#000000", "#000000", 0.3, 0.4, "textures/Man.png");

@@ -317,23 +317,15 @@ var DrawFrame = function() {
         }
     }
 
-    // Draw the title
-    var title = 'Shattered Solace';
-    view.font = 'italic ' + Math.max(20, (BUFFER.width / 30)) + 'px Arial';
-    view.fillStyle = '#1a1a1a';
-    var titleMeasurement = view.measureText(title);
-    var titleHeight = BUFFER.height - 10;
-    view.fillText(title,
-                    BUFFER.width / 2 - (titleMeasurement.width / 2),
-                    titleHeight);
-
     // Draw the FPS
+    /*
     framesSinceLastTick++;
     view.font = '14px Arial';
     view.fillStyle = '#000000';
     var fpsText = 'FPS: ' + framesPerSecond;
     var fpsMeasurement = view.measureText(fpsText);
     view.fillText(fpsText, VIEWPORT.width - (fpsMeasurement.width) - 5, 15);
+    */
 };
 
 var Physics = function(delta) {
@@ -609,7 +601,7 @@ var Physics = function(delta) {
         // Complete motion data
 
             // Velocity
-            if (item.type == Entity.KINEMATIC) {
+            if (item.type == Entity.KINEMATIC || item.type == Entity.PHANTOM) {
                 item.vx = item.vx + item.ax * delta;
             }
             else if (item.frozen == true) {
@@ -698,21 +690,6 @@ document.ontouchend = function(e) {
 };
 
 window.ondevicemotion = function(event) {
-    /*
-    // Use this to set the engine's gravity to that of the real world
-    // by using the accelerometer on the device;
-    devicex = event.accelerationIncludingGravity.x;
-    devicey = event.accelerationIncludingGravity.y;
-    devicez = event.accelerationIncludingGravity.z;
-
-    GRAVITY_X = devicex / 2;
-    GRAVITY_Y = devicey / 2 * -1;
-
-    if (devicez > 8) {
-        GRAVITY_X = 0;
-        GRAVITY_Y = 0;
-    }
-    */
 };
 
 VIEWPORT.onmousemove = function(e) {
@@ -782,21 +759,28 @@ document.onmouseup = function(e) {
     }
 };
 
+var toggle = true;
 document.onkeydown = function(e) {
     var event = window.event ? window.event : e;
     var key = event.keyCode;
     //console.log('KEY DOWN: ' + key);
     if (key == "87" || key == "38") {
         // W or UP key
+        if (toggle == true) {
+            Player.vy = -50;
+            toggle = false;
+        }
     }
     if (key == "65" || key == "37") {
         // A or LEFT key
+        Player.vx = -50;
     }
     if (key == "83" || key == "40") {
         // S or DOWN key
     }
     if (key == "68" || key == "39") {
         // D or RIGHT key
+        Player.vx = 50;
     }
     if (key == "32") {
         // Spacebar
@@ -809,22 +793,25 @@ document.onkeyup = function(e) {
     //console.log('KEY UP: ' + key);
     if (key == "87" || key == "38") {
         // W or UP key
+        toggle = true;
     }
     if (key == "65" || key == "37") {
         // A or LEFT key
+        Player.vx = 0;
     }
     if (key == "83" || key == "40") {
         // S or DOWN key
     }
     if (key == "68" || key == "39") {
         // D or RIGHT key
+        Player.vx = 0;
     }
     if (key == "32") {
         // Spacebar
     }
 };
 
-var GameConditions; // This is a function that is set in the game.js file.
+var GameConditions; // This is a function that is set in the level.js file.
 
 var thisStep;
 var lastStep;
