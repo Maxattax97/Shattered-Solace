@@ -182,7 +182,7 @@ var Entity = function(name, width, height, x, y, type, fillColor, outlineColor, 
 
     this.elasticity = Math.abs(elasticity) || 0.5; // We don't want the elasticity to be negative, because then objects will move through each other.
     this.friction = friction || 0.5;
-    this.fillColor = fillColor || "#ffffff";
+    this.fillColor = fillColor || "#000000";
     this.outlineColor = outlineColor || "#000000";
     this.texture = texture || null;
     this.type = type || Entity.DYNAMIC;
@@ -192,6 +192,12 @@ var Entity = function(name, width, height, x, y, type, fillColor, outlineColor, 
     else {
         this.mass = (this.width * this.height);
     }
+    this.touching = {
+        top: null,
+        left: null,
+        right: null,
+        bottom: null
+    };
 
     // Some state values for functions and such
     this.frozen = false;
@@ -200,7 +206,6 @@ var Entity = function(name, width, height, x, y, type, fillColor, outlineColor, 
     this.lastFillColor = this.fillColor;
 
     WORKSPACE.push(this);
-
 };
 
 // Dynamic entities are affected by all aspects of
@@ -284,8 +289,8 @@ var DrawFrame = function() {
 
             if (item.texture == null){
 
-                trail(item, 32, 0.3, 0.1);
-                trail(item, 128, 0.2, 0.2);
+                trail(item, 128, 0.3, 0.1);
+                trail(item, 256, 0.2, 0.2);
                 trail(item, 512, 0.1, 0.3);
 
 
@@ -305,8 +310,8 @@ var DrawFrame = function() {
             }
             else
             {
-                trail(item, 32, 0.3, 0.1);
-                trail(item, 128, 0.2, 0.2);
+                trail(item, 128, 0.3, 0.1);
+                trail(item, 256, 0.2, 0.2);
                 trail(item, 512, 0.1, 0.3);
 
                 var texture = new Image();
@@ -333,6 +338,10 @@ var Physics = function(delta) {
 
         if (WORKSPACE[i] != null) {
             var item = WORKSPACE[i];
+            item.touching.top = null;
+            item.touching.left = null;
+            item.touching.right = null;
+            item.touching.bottom = null;
 
         // Calculate positioning
 
@@ -378,6 +387,7 @@ var Physics = function(delta) {
 
                             if (leftDistance < rightDistance && leftDistance < topDistance && leftDistance < bottomDistance) {
                                 // WEST or LEFT collision from ITEM
+                                item.touching.left = collider;
 
                                 // Equation of the coefficient of restitution: cr = (vb - va) / (ua - ub)
                                 crx = (collider.vx - item.vx) / (item.vx - collider.vx) || 0;
@@ -404,6 +414,7 @@ var Physics = function(delta) {
                             }
                             else if (rightDistance < leftDistance && rightDistance < topDistance && rightDistance < bottomDistance) {
                                 // EAST or RIGHT collision from ITEM
+                                item.touching.right = collider;
                                 crx = (collider.vx - item.vx) / (item.vx - collider.vx) || 0;
                                 if (item.type != Entity.KINEMATIC) {
                                     item.vx = (((item.mass * iivx) + (collider.mass * civx) + (collider.mass * (item.elasticity * crx) * (iivx - civx)))) / (item.mass + collider.mass);
@@ -422,6 +433,7 @@ var Physics = function(delta) {
                             }
                             else if (topDistance < bottomDistance && topDistance < leftDistance && topDistance < rightDistance) {
                                 // NORTH or TOP collision from ITEM
+                                item.touching.top = collider;
                                 cry = (collider.vy - item.vy) / (item.vy - collider.vy) || 0;
                                 if (item.type != Entity.KINEMATIC) {
                                     item.vy = (((item.mass * iivy) + (collider.mass * civy) + (collider.mass * (item.elasticity * cry) * (iivy - civy)))) / (item.mass + collider.mass);
@@ -440,6 +452,7 @@ var Physics = function(delta) {
                             }
                             else if (bottomDistance < topDistance && bottomDistance < leftDistance && bottomDistance < rightDistance) {
                                 // SOUTH or BOTTOM collision from ITEM
+                                item.touching.bottom = collider;
                                 cry = (collider.vy - item.vy) / (item.vy - collider.vy) || 0;
                                 if (item.type != Entity.KINEMATIC) {
                                     item.vy = (((item.mass * iivy) + (collider.mass * civy) + (collider.mass * (item.elasticity * cry) * (iivy - civy)))) / (item.mass + collider.mass);
@@ -547,6 +560,7 @@ var Physics = function(delta) {
 
                         if (item.x + item.width == collider.x && item.y > collider.y - item.height && item.y < collider.y + collider.height && (item.vy != 0 || collider.vy != 0)) {
                             // EAST or RIGHT friction from ITEM
+                            item.touching.right = collider;
                             seed = Math.random();
                             if (item.type != Entity.KINEMATIC) {
                                 friction = Math.abs((cf * (item.vx * item.mass) * seed) / item.mass);
@@ -559,6 +573,7 @@ var Physics = function(delta) {
                         }
                         else if (item.x == collider.x + collider.width && item.y > collider.y - item.height && item.y < collider.y + collider.height && (item.vy != 0 || collider.vy != 0)) {
                             // WEST or LEFT friction from ITEM
+                            item.touching.left = collider;
                             seed = Math.random();
                             if (item.type != Entity.KINEMATIC) {
                                 friction = Math.abs((cf * (item.vx * item.mass) * seed) / item.mass);
@@ -571,6 +586,7 @@ var Physics = function(delta) {
                         }
                         if (item.y + item.height == collider.y && item.x > collider.x - item.width && item.x < collider.x + collider.width && (item.vx != 0 || collider.vx != 0)) {
                             // SOUTH or BOTTOM friction from ITEM
+                            item.touching.bottom = collider;
                             seed = Math.random();
                             if (item.type != Entity.KINEMATIC) {
                                 friction = Math.abs((cf * (item.vy * item.mass) * seed) / item.mass);
@@ -583,6 +599,7 @@ var Physics = function(delta) {
                         }
                         else if (item.y == collider.y + collider.height && item.x > collider.x - item.width && item.x < collider.x + collider.width && (item.vx != 0 || collider.vx != 0)) {
                             // NORTH or TOP friction from ITEM
+                            item.touching.top = collider;
                             seed = Math.random();
                             if (item.type != Entity.KINEMATIC) {
                                 friction = Math.abs((cf * (item.vy * item.mass) * seed) / item.mass);
@@ -592,6 +609,11 @@ var Physics = function(delta) {
                                 friction = Math.abs((cf * (collider.vy * collider.mass) * seed) / collider.mass);
                                 collider.vx = collider.vx + (friction * colliderDirectionX);
                             }
+                        }
+
+                        if ((item == Player || collider == Player) && Player.waitingToJump == true && Player.touching.bottom != null) {
+                            Player.waitingToJump = false;
+                            Player.jump()
                         }
                     }
                 }
@@ -766,21 +788,18 @@ document.onkeydown = function(e) {
     //console.log('KEY DOWN: ' + key);
     if (key == "87" || key == "38") {
         // W or UP key
-        if (toggle == true) {
-            Player.vy = -50;
-            toggle = false;
-        }
+        Player.jump();
     }
     if (key == "65" || key == "37") {
         // A or LEFT key
-        Player.vx = -50;
+        Player.move(-1);
     }
     if (key == "83" || key == "40") {
         // S or DOWN key
     }
     if (key == "68" || key == "39") {
         // D or RIGHT key
-        Player.vx = 50;
+        Player.move(1);
     }
     if (key == "32") {
         // Spacebar
@@ -792,19 +811,21 @@ document.onkeyup = function(e) {
     var key = event.keyCode;
     //console.log('KEY UP: ' + key);
     if (key == "87" || key == "38") {
+        if (Player.waitingToJump == true) {
+            Player.waitingToJump = false;
+        }
         // W or UP key
-        toggle = true;
     }
     if (key == "65" || key == "37") {
         // A or LEFT key
-        Player.vx = 0;
+        Player.move(0);
     }
     if (key == "83" || key == "40") {
         // S or DOWN key
     }
     if (key == "68" || key == "39") {
         // D or RIGHT key
-        Player.vx = 0;
+        Player.move(0);
     }
     if (key == "32") {
         // Spacebar
@@ -828,6 +849,7 @@ var wait = function(seconds, callback) {
         waitEnd = waitStart + seconds;
         waitCallback = callback;
         waitState = true;
+        //alert(waitStart + " " + waitEnd);
     }
 };
 
@@ -848,6 +870,7 @@ var Engine = function() {
     }
 
     // Calculations
+    //Player.manage();
     Physics(delta);
 
     GameConditions();
