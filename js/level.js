@@ -18,7 +18,7 @@ var shoot = false;
 
 var deathBlock = new Entity("Death Block", 200, 50, 650, 0, Entity.KINEMATIC, "#aa0000");
 
-//var pushBlock = new Entity("Push Block", 80, 80, 250, 50, Entity.DYNAMIC, "#000000", "#000000", 0.3, 0.2);
+var pushBlock = new Entity("Push Block", 80, 80, 300, 50, Entity.DYNAMIC, "#000000", "#000000", 0.3, 0.2);
 
 new Entity("Ceiling", 3500, 1000, -1000, -1000, Entity.KINEMATIC);
 new Entity("Wall", 1100, 1500, -1000, -100, Entity.KINEMATIC);
