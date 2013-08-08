@@ -67,6 +67,9 @@ var CAMERA = {
         this.scrollTarget.step = 0;
         this.scrollTarget.state = true;
     },
+    scrollReady : function() {
+        return !this.scrollTarget.state;
+    },
     scrollCheck : function() {
         if (this.scrollTarget.state == true) {
             this.scrollTarget.step++;
@@ -122,14 +125,6 @@ var CAMERA = {
                 this.scrollTarget.state = false;
             }
         }
-    },
-    toPointX : function(mouseX) {
-        var point = mouseX - CAMERA.scrollX;
-        return point;
-    },
-    toPointY : function(mouseY) {
-        var point = mouseY - CAMERA.scrollY;
-        return point;
     }
 };
 
@@ -323,14 +318,12 @@ var DrawFrame = function() {
     }
 
     // Draw the FPS
-    /*
     framesSinceLastTick++;
     view.font = '14px Arial';
-    view.fillStyle = '#000000';
+    view.fillStyle = 'blue';
     var fpsText = 'FPS: ' + framesPerSecond;
     var fpsMeasurement = view.measureText(fpsText);
     view.fillText(fpsText, VIEWPORT.width - (fpsMeasurement.width) - 5, 15);
-    */
 };
 
 var Physics = function(delta) {
@@ -618,7 +611,7 @@ var Physics = function(delta) {
                     }
                 }
             }
-            }
+        }
 
         // Complete motion data
 
@@ -657,7 +650,7 @@ var Physics = function(delta) {
      }
 };
 
-
+//requestAnimationFrame polyfill
 (function() {
     var lastTime = 0;
     var vendors = ['ms', 'moz', 'webkit', 'o'];
@@ -681,156 +674,99 @@ var Physics = function(delta) {
         };
 }());
 
-var MOUSE_X;
-var MOUSE_Y;
-
-var TOUCHES = [];
-
-document.ontouchmove = function(e) {
-    e.preventDefault(); // Stop scrolling on iOS
-    e.stopPropagation();
-    TOUCHES = e.changedTouches;
-
-    if (TOUCHES.length >= 1) {
-        MOUSE_X = TOUCHES[0].pageX * PIXEL_RATIO;
-        MOUSE_Y = TOUCHES[0].pageY * PIXEL_RATIO;
-    }
-};
-
-document.ontouchstart = function(e) {
-    TOUCHES = e.changedTouches;
-
-    if (TOUCHES.length >= 1) {
-        MOUSE_X = TOUCHES[0].pageX * PIXEL_RATIO;
-        MOUSE_Y = TOUCHES[0].pageY * PIXEL_RATIO;
-    }
-
-};
-
-document.ontouchend = function(e) {
-    TOUCHES = e.changedTouches;
-};
-
-window.ondevicemotion = function(event) {
-};
-
-VIEWPORT.onmousemove = function(e) {
-    MOUSE_X = Math.round(e.layerX * PIXEL_RATIO);
-    MOUSE_Y = Math.round(e.layerY * PIXEL_RATIO);
-};
-
-
 var drawMode = false;
 var startX;
 var startY;
+var scrollFactor = 10;
+var scrollMaxRate = 50;
+var scrollMinRate = -scrollMaxRate;
 
-document.onmousedown = function(e) {
-    switch (e.which) {
-        case 1:
-            // Left mouse button
-            if (drawMode == false) {
-                drawMode = true;
-                startX = MOUSE_X;
-                startY = MOUSE_Y;
+function handleInput(){
+    //Check draw mode
+    if(INPUT.isPointerDown(MOUSE.LEFT)){
+        if(drawMode === false){
+            drawMode = true;
+            startX = INPUT.getPointerX();
+            startY = INPUT.getPointerY();
+        }
+    }
+    else {
+        if(drawMode === true){
+            var endX = INPUT.getPointerX() - CAMERA.scrollX;
+            var endY = INPUT.getPointerY() - CAMERA.scrollY;
+
+            startX = startX - CAMERA.scrollX;
+            startY = startY - CAMERA.scrollY;
+            var objectX;
+            var objectY;
+            var objectWidth;
+            var objectHeight;
+            if (startX < endX) {
+                objectX = startX;
+                objectWidth = endX - startX;
             }
-            break;
-        case 2:
-            // Middle mouse button
-            break;
-        case 3:
-            // Right mouse button
-            CAMERA.focusX = CAMERA.toPointX(MOUSE_X);
-            CAMERA.focusY = CAMERA.toPointY(MOUSE_Y);
+            else {
+                objectX = endX;
+                objectWidth = startX - endX;
+            }
+            if (startY < endY) {
+                objectY = startY;
+                objectHeight = endY - startY;
+            }
+            else {
+                objectY = endY;
+                objectHeight = startY - endY;
+            }
+
+            new Entity("Drawn Object", objectWidth, objectHeight, objectX, objectY, Entity.DYNAMIC, "#0000ff", "#000000", 0.5);
+
+            drawMode = false;
+        }
+    }
+
+    //Camera focusing
+    if(INPUT.isPointerDown(MOUSE.RIGHT)){
+        if(CAMERA.scrollReady()){
+            var xVal = Math.max(
+                Math.min(
+                    (INPUT.getPointerX() - (VIEWPORT.width / 2)) / scrollFactor,
+                    scrollMaxRate
+                ),
+                scrollMinRate
+            );
+            var yVal = Math.max(
+                Math.min(
+                    (INPUT.getPointerY() - (VIEWPORT.height / 2)) / scrollFactor, scrollMaxRate
+                ), scrollMinRate
+            );
+
+            CAMERA.focusX += Math.floor(xVal);
+            CAMERA.focusY += Math.floor(yVal);
+
             CAMERA.target = null;
-            break;
+        }
     }
-};
 
-document.onmouseup = function(e) {
-
-    if (drawMode == true) {
-        var endX = MOUSE_X - CAMERA.scrollX;
-        var endY = MOUSE_Y - CAMERA.scrollY;
-        startX = startX - CAMERA.scrollX;
-        startY = startY - CAMERA.scrollY;
-        var objectX;
-        var objectY;
-        var objectWidth;
-        var objectHeight;
-        if (startX < endX) {
-            objectX = startX;
-            objectWidth = endX - startX;
-        }
-        else {
-            objectX = endX;
-            objectWidth = startX - endX;
-        }
-        if (startY < endY) {
-            objectY = startY;
-            objectHeight = endY - startY;
-        }
-        else {
-            objectY = endY;
-            objectHeight = startY - endY;
-        }
-
-        new Entity("Drawn Object", objectWidth, objectHeight, objectX, objectY, Entity.DYNAMIC, "#0000ff", "#000000", 0.5);
-
-        drawMode = false;
-
-    }
-};
-
-var toggle = true;
-document.onkeydown = function(e) {
-    var event = window.event ? window.event : e;
-    var key = event.keyCode;
-    //console.log('KEY DOWN: ' + key);
-    if (key == "87" || key == "38") {
-        // W or UP key
+    //Keyboard events
+    if(INPUT.isKeyDown(CONTROLS.UP)){
         Player.jump();
     }
-    if (key == "65" || key == "37") {
-        // A or LEFT key
-        Player.move(-1);
-    }
-    if (key == "83" || key == "40") {
-        // S or DOWN key
-    }
-    if (key == "68" || key == "39") {
-        // D or RIGHT key
-        Player.move(1);
-    }
-    if (key == "32") {
-        // Spacebar
-    }
-};
-
-document.onkeyup = function(e) {
-    var event = window.event ? window.event : e;
-    var key = event.keyCode;
-    //console.log('KEY UP: ' + key);
-    if (key == "87" || key == "38") {
+    else { //key up
         if (Player.waitingToJump == true) {
             Player.waitingToJump = false;
         }
-        // W or UP key
     }
-    if (key == "65" || key == "37") {
-        // A or LEFT key
+
+    if(INPUT.isKeyDown(CONTROLS.LEFT)){
+        Player.move(-1);
+    }
+    else if(INPUT.isKeyDown(CONTROLS.RIGHT)){
+        Player.move(1);
+    }
+    else {
         Player.move(0);
     }
-    if (key == "83" || key == "40") {
-        // S or DOWN key
-    }
-    if (key == "68" || key == "39") {
-        // D or RIGHT key
-        Player.move(0);
-    }
-    if (key == "32") {
-        // Spacebar
-    }
-};
+}
 
 var GameConditions; // This is a function that is set in the level.js file.
 
@@ -868,6 +804,8 @@ var Engine = function() {
             }
         }(waitStart, waitEnd, thisStep, waitCallback);
     }
+
+    handleInput();
 
     // Calculations
     //Player.manage();
