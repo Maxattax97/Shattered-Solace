@@ -305,14 +305,29 @@ var DrawFrame = function() {
             }
             else
             {
-                trail(item, 128, 0.3, 0.1);
-                trail(item, 256, 0.2, 0.2);
-                trail(item, 512, 0.1, 0.3);
+                if (item == Player) {
+                    // Will need to be modified
+                    trail(item, 128, 0.3, 0.1);
+                    trail(item, 256, 0.2, 0.2);
+                    trail(item, 512, 0.1, 0.3);
 
-                var texture = new Image();
-                texture.src = item.texture;
+                    var texture = new Image();
 
-                view.drawImage(texture, xPos, yPos, item.width, item.height);
+                    texture.src = Player.sheet;
+                    //alert(texture.src);
+                    view.drawImage(Player.sheet, Player.frame.x, Player.frame.y, Player.width, Player.height, xPos, yPos, Player.width, Player.height);
+                }
+                else {
+                    trail(item, 128, 0.3, 0.1);
+                    trail(item, 256, 0.2, 0.2);
+                    trail(item, 512, 0.1, 0.3);
+
+                    var texture = new Image();
+                    texture.src = item.texture;
+
+                    view.drawImage(texture, xPos, yPos, item.width, item.height);
+
+                }
             }
         }
     }
