@@ -315,7 +315,7 @@ var DrawFrame = function() {
 
                     texture.src = Player.sheet;
                     //alert(texture.src);
-                    view.drawImage(Player.sheet, Player.frame.x, Player.frame.y, Player.width, Player.height, xPos, yPos, Player.width, Player.height);
+                    view.drawImage(texture, Player.frame.x, Player.frame.y, Player.width, Player.height, xPos, yPos, Player.width, Player.height);
                 }
                 else {
                     trail(item, 128, 0.3, 0.1);
@@ -766,11 +766,6 @@ function handleInput(){
     if(INPUT.isKeyDown(CONTROLS.UP)){
         Player.jump();
     }
-    else { //key up
-        if (Player.waitingToJump == true) {
-            Player.waitingToJump = false;
-        }
-    }
 
     if(INPUT.isKeyDown(CONTROLS.LEFT)){
         Player.move(-1);
@@ -823,9 +818,8 @@ var Engine = function() {
     handleInput();
 
     // Calculations
-    //Player.manage();
     Physics(delta);
-
+    Player.manage();
     GameConditions();
 
     // Draw

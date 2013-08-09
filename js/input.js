@@ -14,17 +14,19 @@ var KEYS = {
     W: 87,
     S: 83,
     A: 65,
-    D: 68
+    D: 68,
+    SHIFT: 16
 };
 
 /*
     Define custom game controls here. Each must be an array!
 */
 var CONTROLS = {
-    UP: [KEYS.UP, KEYS.W],
+    UP: [KEYS.UP, KEYS.W, KEYS.SPACE],
     DOWN: [KEYS.DOWN, KEYS.S],
     LEFT: [KEYS.LEFT, KEYS.A],
-    RIGHT: [KEYS.RIGHT, KEYS.D]
+    RIGHT: [KEYS.RIGHT, KEYS.D],
+    USE: [KEYS.SHIFT]
 };
 
 /*
@@ -157,6 +159,7 @@ var INPUT = {
 
     bindKeys: function(element){
         element.addEventListener('keydown', function(e){
+            //alert(e.which); // Use this to log key codes
             INPUT._Keys[e.which] = new InputState();
         }, false);
 

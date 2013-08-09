@@ -1,4 +1,13 @@
 // Insert game generation code here...
+/*
+var count = 0;
+var count2 = 0;
+var jumpCount = 0;
+var frameTick = 6;
+var frameX = 0;
+var frameY = 0;
+*/
+
 GameConditions = function() {
     if (Player.x > 300 && shoot == false) {
         shoot = true;
@@ -12,13 +21,50 @@ GameConditions = function() {
     if (Player.touching.top == deathBlock || Player.touching.right == deathBlock || Player.touching.left == deathBlock) {
         Player.die();
     }
+    /*
+    if (count == frameTick) {
+        count = 0;
+
+        if (frameX == 4) {
+            frameX = -1;
+        }
+        if (frameY == 4 && jumpCount < 6) {
+            jumpCount = jumpCount + 1;
+            if (frameX == 0) {
+                frameX = -1;
+            }
+            if (frameX == 2) {
+                frameX = 1;
+            }
+        }
+        else {
+            jumpCount = 0;
+        }
+        frameX = frameX + 1;
+        Player.frame.set(frameX, frameY);
+    }
+    else {
+        count = count + 1;
+    }
+    if (count2 == frameTick * 16) {
+        count2 = 0;
+        frameY = frameY + 1;
+        if (frameY > 4) {
+            frameY = 0;
+        }
+    }
+    else {
+        count2 = count2 + 1;
+    }
+    */
+
 };
 
 var shoot = false;
 
 var deathBlock = new Entity("Death Block", 200, 50, 650, 0, Entity.KINEMATIC, "#aa0000");
 
-var pushBlock = new Entity("Push Block", 80, 80, 300, 50, Entity.DYNAMIC, "#000000", "#000000", 0.3, 0.2);
+//var pushBlock = new Entity("Push Block", 80, 80, 300, 50, Entity.DYNAMIC, "#000000", "#000000", 0.3, 0.2);
 
 new Entity("Ceiling", 3500, 1000, -1000, -1000, Entity.KINEMATIC);
 new Entity("Wall", 1100, 1500, -1000, -100, Entity.KINEMATIC);
