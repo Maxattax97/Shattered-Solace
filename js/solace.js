@@ -35,7 +35,7 @@ var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", 
         frameY : 0,
         tick : 0,
         jumpTick : 0,
-        baseSpeed : 7,
+        baseSpeed : 1.75,
         speed : 0,
         set : function(xFrame, yFrame) {
             Player.frame.x = xFrame * 70;
@@ -67,7 +67,7 @@ var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", 
                 Player.facing = 1;
                 Player.frame.tick = Player.frame.tick + Player.frame.speed;
                 if (Player.frame.frameY == 0) {
-                    if (Player.frame.tick == Player.frame.baseSpeed) {
+                    if (Player.frame.tick >= Player.frame.baseSpeed) {
                         Player.frame.tick = 0;
                         Player.frame.frameX = Player.frame.frameX + 1;
                         if (Player.frame.frameX > 3) {
@@ -85,7 +85,7 @@ var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", 
                 Player.facing = -1;
                 Player.frame.tick = Player.frame.tick + Player.frame.speed;
                 if (Player.frame.frameY == 1) {
-                    if (Player.frame.tick == Player.frame.baseSpeed) {
+                    if (Player.frame.tick >= Player.frame.baseSpeed) {
                         Player.frame.tick = 0;
                         Player.frame.frameX = Player.frame.frameX + 1;
                         if (Player.frame.frameX > 3) {
