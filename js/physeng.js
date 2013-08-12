@@ -747,7 +747,76 @@ function handleInput(){
     }
     */
 
+    //Touch events
+    // leftTouch center x = VIEWPORT.width / 5
+    var leftTouch = null;
+    // rightTouch center x = VIEWPORT.width / 5 * 4
+    var rightTouch = null;
+
+    if (INPUT.isPointerDown()) {
+        console.log((INPUT.getPointerX()) + " > " + (VIEWPORT.width / 5 * 2) + ", " + (VIEWPORT.width / 5 * 4));
+        if ((INPUT.getPointerX()) < (VIEWPORT.width / 5 * 2)) {
+            INPUT.setControlState(CONTROLS.LEFT, true);
+            INPUT.setControlState(CONTROLS.RIGHT, false);
+        }
+        else if ((INPUT.getPointerX()) > (VIEWPORT.width / 5 * 4)) {
+            INPUT.setControlState(CONTROLS.RIGHT, true);
+            INPUT.setControlState(CONTROLS.LEFT, false);
+        }
+        else {
+            INPUT.setControlState(CONTROLS.LEFT, false);
+            INPUT.setControlState(CONTROLS.RIGHT, false);
+        }
+
+        if ((INPUT.getPointerY()) < (VIEWPORT.height / 5 * 1)){
+            INPUT.setControlState(CONTROLS.UP, true);
+        }
+        else {
+            INPUT.setControlState(CONTROLS.UP, false);
+        }
+
+        /*
+         var x;
+         var speed = 0;
+
+         if(leftTouch){
+         if (leftTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5) {
+         x = leftTouch.pageX * INPUT._Ratio;
+         speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
+
+         Player.move(speed);
+         }
+         else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
+         x = leftTouch.pageX * INPUT._Ratio;
+         speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
+
+         Player.move(speed);
+         }
+         }
+
+         if(rightTouch){
+         if (rightTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
+         x = rightTouch.pageX * INPUT._Ratio;
+
+         //Player.move();
+         }
+         else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
+         x = rightTouch.pageX * INPUT._Ratio;
+
+         //Player.move((x - VIEWPORT.width / 5) / VIEWPORT.width / 5 * 2);
+         }
+         }
+         */
+    }
+    else {
+        //No input
+        INPUT.setControlState(CONTROLS.LEFT, false);
+        INPUT.setControlState(CONTROLS.RIGHT, false);
+        INPUT.setControlState(CONTROLS.UP, false);
+    }
+
     //Camera focusing
+    /*
     if(INPUT.isPointerDown(MOUSE.RIGHT)){
         if(CAMERA.scrollReady()){
             var xVal = Math.max(
@@ -769,6 +838,7 @@ function handleInput(){
             CAMERA.target = null;
         }
     }
+    */
 
     //Keyboard events
     if(INPUT.isKeyDown(CONTROLS.UP)){
@@ -783,55 +853,6 @@ function handleInput(){
     }
     else {
         Player.move(0);
-    }
-
-    //Touch events
-    // leftTouch center x = VIEWPORT.width / 5
-    var leftTouch = null;
-    // rightTouch center x = VIEWPORT.width / 5 * 4
-    var rightTouch = null;
-
-    if (INPUT._Pointer.touches.length > 0) {
-        for (var i = 0; i < INPUT._Pointer.touches.length; i++) {
-            //alert(i + " " + INPUT._Pointer.touches[i].pageX * INPUT._Ratio + " > " + VIEWPORT.width / 5 * 2);
-            if (INPUT._Pointer.touches[i].pageX * INPUT._Ratio < VIEWPORT.width / 5 * 2) {
-                leftTouch = INPUT._Pointer.touches[i];
-                //alert("Left touch set");
-            }
-            else if (INPUT._Pointer.touches[i].pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
-                rightTouch = INPUT._Pointer.touches[i];
-                //alert("Right touch set");
-            }
-        }
-
-        var x;
-        var speed = 0;
-
-        if (leftTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5) {
-            x = leftTouch.pageX * INPUT._Ratio;
-            speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
-
-            Player.move(speed);
-        }
-
-        else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
-            x = leftTouch.pageX * INPUT._Ratio;
-            speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
-
-            Player.move(speed);
-        }
-        /*
-        if (rightTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
-            x = rightTouch.pageX * INPUT._Ratio;
-
-            //Player.move();
-        }
-        else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
-            x = rightTouch.pageX * INPUT._Ratio;
-
-            //Player.move((x - VIEWPORT.width / 5) / VIEWPORT.width / 5 * 2);
-        }
-        */
     }
 }
 
