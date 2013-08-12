@@ -748,71 +748,68 @@ function handleInput(){
     */
 
     //Touch events
-    // leftTouch center x = VIEWPORT.width / 5
-    var leftTouch = null;
-    // rightTouch center x = VIEWPORT.width / 5 * 4
-    var rightTouch = null;
+    if (INPUT.isTouchDevice) {
+        if (INPUT.isPointerDown()) {
+            console.log((INPUT.getPointerX()) + " > " + (VIEWPORT.width / 5 * 2) + ", " + (VIEWPORT.width / 5 * 4));
+            if ((INPUT.getPointerX()) < (VIEWPORT.width / 5 * 2)) {
+                INPUT.setControlState(CONTROLS.LEFT, true);
+                INPUT.setControlState(CONTROLS.RIGHT, false);
+            }
+            else if ((INPUT.getPointerX()) > (VIEWPORT.width / 5 * 4)) {
+                INPUT.setControlState(CONTROLS.RIGHT, true);
+                INPUT.setControlState(CONTROLS.LEFT, false);
+            }
+            else {
+                INPUT.setControlState(CONTROLS.LEFT, false);
+                INPUT.setControlState(CONTROLS.RIGHT, false);
+            }
 
-    if (INPUT.isPointerDown()) {
-        console.log((INPUT.getPointerX()) + " > " + (VIEWPORT.width / 5 * 2) + ", " + (VIEWPORT.width / 5 * 4));
-        if ((INPUT.getPointerX()) < (VIEWPORT.width / 5 * 2)) {
-            INPUT.setControlState(CONTROLS.LEFT, true);
-            INPUT.setControlState(CONTROLS.RIGHT, false);
-        }
-        else if ((INPUT.getPointerX()) > (VIEWPORT.width / 5 * 4)) {
-            INPUT.setControlState(CONTROLS.RIGHT, true);
-            INPUT.setControlState(CONTROLS.LEFT, false);
+            if ((INPUT.getPointerY()) < (VIEWPORT.height / 5 * 1)){
+                INPUT.setControlState(CONTROLS.UP, true);
+            }
+            else {
+                INPUT.setControlState(CONTROLS.UP, false);
+            }
+
+            /*
+             var x;
+             var speed = 0;
+
+             if(leftTouch){
+             if (leftTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5) {
+             x = leftTouch.pageX * INPUT._Ratio;
+             speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
+
+             Player.move(speed);
+             }
+             else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
+             x = leftTouch.pageX * INPUT._Ratio;
+             speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
+
+             Player.move(speed);
+             }
+             }
+
+             if(rightTouch){
+             if (rightTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
+             x = rightTouch.pageX * INPUT._Ratio;
+
+             //Player.move();
+             }
+             else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
+             x = rightTouch.pageX * INPUT._Ratio;
+
+             //Player.move((x - VIEWPORT.width / 5) / VIEWPORT.width / 5 * 2);
+             }
+             }
+             */
         }
         else {
+            //No input
             INPUT.setControlState(CONTROLS.LEFT, false);
             INPUT.setControlState(CONTROLS.RIGHT, false);
-        }
-
-        if ((INPUT.getPointerY()) < (VIEWPORT.height / 5 * 1)){
-            INPUT.setControlState(CONTROLS.UP, true);
-        }
-        else {
             INPUT.setControlState(CONTROLS.UP, false);
         }
-
-        /*
-         var x;
-         var speed = 0;
-
-         if(leftTouch){
-         if (leftTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5) {
-         x = leftTouch.pageX * INPUT._Ratio;
-         speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
-
-         Player.move(speed);
-         }
-         else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
-         x = leftTouch.pageX * INPUT._Ratio;
-         speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
-
-         Player.move(speed);
-         }
-         }
-
-         if(rightTouch){
-         if (rightTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
-         x = rightTouch.pageX * INPUT._Ratio;
-
-         //Player.move();
-         }
-         else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
-         x = rightTouch.pageX * INPUT._Ratio;
-
-         //Player.move((x - VIEWPORT.width / 5) / VIEWPORT.width / 5 * 2);
-         }
-         }
-         */
-    }
-    else {
-        //No input
-        INPUT.setControlState(CONTROLS.LEFT, false);
-        INPUT.setControlState(CONTROLS.RIGHT, false);
-        INPUT.setControlState(CONTROLS.UP, false);
     }
 
     //Camera focusing
