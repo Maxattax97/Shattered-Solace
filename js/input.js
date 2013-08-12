@@ -67,10 +67,42 @@ var INPUT = {
     },
 
     isPointerDown: function(btn){
-        if(btn in this._Pointer.buttons && this._Pointer.buttons[btn] !== false){
-            return true;
+        if(btn){ //Specific button down?
+            if(btn in this._Pointer.buttons && this._Pointer.buttons[btn] !== false){
+                return true;
+            }
+        }
+        else{ //Any button down?
+            for(var k in this._Pointer.buttons){
+                if(this._Pointer.buttons[k] !== false)
+                    return true;
+            }
         }
         return false;
+    },
+
+    setKeyState: function(btn, down){
+        if(down){
+            INPUT._Keys[btn] = new InputState();
+        }
+        else{
+            INPUT._Keys[btn] = false;
+        }
+    },
+
+    setControlState: function(btns, down){
+        for(var i = 0; i < btns.length; i++){
+            INPUT.setKeyState(btns[i], down);
+        }
+    },
+
+    setPointerState: function(btn, down){
+        if(down){
+            INPUT._Pointer.buttons[btn] = new InputState();
+        }
+        else{
+            INPUT._Pointer.buttons[btn] = false;
+        }
     },
 
     getPointerX: function(){
@@ -79,6 +111,14 @@ var INPUT = {
 
     getPointerY: function(){
         return this._Pointer.y;
+    },
+
+    getTouches: function(){
+        return this._Pointer.touches;
+    },
+
+    getPixelRatio: function(){
+        return this._Ratio;
     },
 
     _setTouchesTimeout: null,
@@ -92,30 +132,27 @@ var INPUT = {
         //Simulate mouse buttons
         switch(INPUT._Pointer.touches.length){
             case 1:
-                if(!INPUT._Pointer.buttons[MOUSE.LEFT])
-                    INPUT._Pointer.buttons[MOUSE.LEFT] = new InputState();
-
-//                INPUT._Pointer.buttons[MOUSE.MIDDLE] = false;
-//                INPUT._Pointer.buttons[MOUSE.RIGHT] = false;
+                if(!INPUT.isPointerDown(MOUSE.LEFT))
+                    INPUT.setPointerState(MOUSE.LEFT, true);
+//                    INPUT.setPointerState(MOUSE.MIDDLE, false);
+//                    INPUT.setPointerState(MOUSE.RIGHT, false);
                 break;
             case 2:
-                if(!INPUT._Pointer.buttons[MOUSE.RIGHT])
-                    INPUT._Pointer.buttons[MOUSE.RIGHT] = new InputState();
-
-//                INPUT._Pointer.buttons[MOUSE.LEFT] = false;
-//                INPUT._Pointer.buttons[MOUSE.MIDDLE] = false;
+                if(!INPUT.isPointerDown(MOUSE.RIGHT))
+                    INPUT.setPointerState(MOUSE.RIGHT, true);
+//                    INPUT.setPointerState(MOUSE.LEFT, false);
+//                    INPUT.setPointerState(MOUSE.MIDDLE, false);
                 break;
             case 3:
-                if(!INPUT._Pointer.buttons[MOUSE.MIDDLE])
-                    INPUT._Pointer.buttons[MOUSE.MIDDLE] = new InputState();
-
-//                INPUT._Pointer.buttons[MOUSE.LEFT] = false;
-//                INPUT._Pointer.buttons[MOUSE.RIGHT] = false;
+                if(!INPUT.isPointerDown(MOUSE.MIDDLE))
+                    INPUT.setPointerState(MOUSE.MIDDLE, true);
+//                    INPUT.setPointerState(MOUSE.LEFT, false);
+//                    INPUT.setPointerState(MOUSE.RIGHT, false);
                 break;
             case 0:
-                INPUT._Pointer.buttons[MOUSE.LEFT] = false;
-                INPUT._Pointer.buttons[MOUSE.MIDDLE] = false;
-                INPUT._Pointer.buttons[MOUSE.RIGHT] = false;
+                INPUT.setPointerState(MOUSE.LEFT, false);
+                INPUT.setPointerState(MOUSE.MIDDLE, false);
+                INPUT.setPointerState(MOUSE.RIGHT, false);
                 break;
         }
     },
@@ -160,11 +197,11 @@ var INPUT = {
     bindKeys: function(element){
         element.addEventListener('keydown', function(e){
             //alert(e.which); // Use this to log key codes
-            INPUT._Keys[e.which] = new InputState();
+            INPUT.setKeyState(e.which, true);
         }, false);
 
         element.addEventListener('keyup', function(e){
-            INPUT._Keys[e.which] = false;
+            INPUT.setKeyState(e.which, false);
         }, false);
     },
 
