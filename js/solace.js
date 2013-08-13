@@ -1,5 +1,5 @@
 
-var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", "#000000", 0.15, 0.7, "textures/Man.png");
+var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", "#000000", 0.3, 0.7, "textures/Man.png");
 /*    var color = "rgba(0, 0, 0, 0)"; // Invisible
     color = "rgba(0, 0, 0, 0.5)";
     Player.head = new Entity("Player Head", 37, 37, Player.x + 16.5, Player.y + 4.5, Entity.DYNAMIC, color, color, 0.3, 0.4);
@@ -35,7 +35,7 @@ var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", 
         frameY : 0,
         tick : 0,
         jumpTick : 0,
-        baseSpeed : 1.75,
+        baseSpeed : 3, // 1.75
         speed : 0,
         set : function(xFrame, yFrame) {
             Player.frame.x = xFrame * 70;
@@ -164,18 +164,18 @@ var Player = new Entity("Player", 70, 150, 150, 150, Entity.DYNAMIC, "#000000", 
         if (Player.dead != true) {
             Player.dead = true;
             // Fragment the player
-            Player.head1 = new Entity("Player Head", 18.5, 18.5, Player.x + 16.5, Player.y + 4.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx - 1, Player.vy - 1);
-            Player.head2 = new Entity("Player Head", 18.5, 18.5, Player.x + 35, Player.y + 4.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx + 1, Player.vy - 1);
-            Player.head3 = new Entity("Player Head", 18.5, 18.5, Player.x + 16.5, Player.y + 23, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx - 1, Player.vy + 1);
-            Player.head4 = new Entity("Player Head", 18.5, 18.5, Player.x + 35, Player.y + 23, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx + 1, Player.vy + 1);
-            Player.torso1 = new Entity("Player Torso", 32.5, 24.5, Player.x + 2.5, Player.y + 46.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx - 1, Player.vy - 1);
-            Player.torso2 = new Entity("Player Torso", 32.5, 24.5, Player.x + 35, Player.y + 46.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx + 1, Player.vy - 1);
-            Player.torso3 = new Entity("Player Torso", 32.5, 24.5, Player.x + 2.5, Player.y + 71, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx - 1, Player.vy + 1);
-            Player.torso4 = new Entity("Player Torso", 32.5, 24.5, Player.x + 35, Player.y + 71, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx + 1, Player.vy + 1);
-            Player.legs1 = new Entity("Player Legs", 15.5, 27, Player.x + 19.5, Player.y + 95.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx - 1, Player.vy - 1);
-            Player.legs2 = new Entity("Player Legs", 15.5, 27, Player.x + 35, Player.y + 95.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx + 1, Player.vy - 1);
-            Player.legs3 = new Entity("Player Legs", 15.5, 27, Player.x + 19.5, Player.y + 122.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx - 1, Player.vy + 1);
-            Player.legs4 = new Entity("Player Legs", 15.5, 27, Player.x + 35, Player.y + 122.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity * 3, Player.friction * 0.5, null, Player.vx + 1, Player.vy + 1);
+            Player.head1 = new Entity("Player Head", 18.5, 18.5, Player.x + 16.5, Player.y + 4.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx - 1, Player.vy - 1);
+            Player.head2 = new Entity("Player Head", 18.5, 18.5, Player.x + 35, Player.y + 4.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx + 1, Player.vy - 1);
+            Player.head3 = new Entity("Player Head", 18.5, 18.5, Player.x + 16.5, Player.y + 23, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx - 1, Player.vy + 1);
+            Player.head4 = new Entity("Player Head", 18.5, 18.5, Player.x + 35, Player.y + 23, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx + 1, Player.vy + 1);
+            Player.torso1 = new Entity("Player Torso", 32.5, 24.5, Player.x + 2.5, Player.y + 46.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx - 1, Player.vy - 1);
+            Player.torso2 = new Entity("Player Torso", 32.5, 24.5, Player.x + 35, Player.y + 46.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx + 1, Player.vy - 1);
+            Player.torso3 = new Entity("Player Torso", 32.5, 24.5, Player.x + 2.5, Player.y + 71, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx - 1, Player.vy + 1);
+            Player.torso4 = new Entity("Player Torso", 32.5, 24.5, Player.x + 35, Player.y + 71, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx + 1, Player.vy + 1);
+            Player.legs1 = new Entity("Player Legs", 15.5, 27, Player.x + 19.5, Player.y + 95.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx - 1, Player.vy - 1);
+            Player.legs2 = new Entity("Player Legs", 15.5, 27, Player.x + 35, Player.y + 95.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx + 1, Player.vy - 1);
+            Player.legs3 = new Entity("Player Legs", 15.5, 27, Player.x + 19.5, Player.y + 122.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx - 1, Player.vy + 1);
+            Player.legs4 = new Entity("Player Legs", 15.5, 27, Player.x + 35, Player.y + 122.5, Entity.DYNAMIC, "#000000", "#000000", Player.elasticity, Player.friction * 0.5, null, Player.vx + 1, Player.vy + 1);
 
             Player.destroy();
 
