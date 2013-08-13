@@ -341,10 +341,12 @@ var DrawFrame = function() {
     view.fillText(fpsText, VIEWPORT.width - (fpsMeasurement.width) - 5, 15);
 
     // Draw control grid lines (for reference, only temporary)
+    /*
     view.fillStyle = "rgba(0, 0, 255, 0.25)";
     view.fillRect(VIEWPORT.width / 5, 0, 1, VIEWPORT.height);
     view.fillRect(VIEWPORT.width / 5 * 4, 0, 1, VIEWPORT.height);
     view.fillRect(0, VIEWPORT.height / 3 * 2, VIEWPORT.width, 1);
+    */
 };
 
 var Physics = function(delta) {
@@ -701,6 +703,8 @@ var startY;
 var scrollFactor = 10;
 var scrollMaxRate = 50;
 var scrollMinRate = -scrollMaxRate;
+var prevRightTouchY;
+var prevLeftTouch = false;
 
 function handleInput(){
     //Check draw mode
@@ -749,6 +753,76 @@ function handleInput(){
 
     //Touch events
     if (INPUT.isTouchDevice) {
+        var touches = INPUT._Pointer.touches;
+        if (touches.length == 0) {
+            leftTouch = null;
+            rightTouch = null;
+            prevRightTouchY = null;
+            prevLeftTouch = false;
+            Player.move(0)
+        }
+        for (var i = 0; i < touches.length; i++) {
+            var leftTouch;
+            var rightTouch;
+
+            if (touches[i].pageX * INPUT._Ratio < VIEWPORT.width / 5 * 2) {
+                leftTouch = touches[i];
+                prevLeftTouch = true;
+            }
+            else if (touches[i].pageX * INPUT._Ratio < VIEWPORT.width / 5 * 3 && prevLeftTouch) {
+                leftTouch = touches[i];
+            }
+            else {
+                leftTouch = null;
+                prevLeftTouch = false;
+            }
+
+            if (touches[i].pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
+                rightTouch = touches[i];
+            }
+            else {
+                rightTouch = null;
+                prevRightTouchY = null;
+            }
+
+            var x;
+            var y;
+            var speed = 0;
+            var tolerance = 20;
+
+            if(leftTouch){
+                x = leftTouch.pageX * INPUT._Ratio;
+                speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
+                if (x > VIEWPORT.width / 5 * 2) {
+                    Player.move(1);
+                }
+                else if (x > VIEWPORT.width / 5) {
+                    Player.move(speed);
+                }
+                else if (x < VIEWPORT.width / 5) {
+                    Player.move(speed);
+                }
+            }
+            else {
+                Player.move(0);
+            }
+
+            if(rightTouch){
+                y = rightTouch.pageY * INPUT._Ratio;
+                if (y < VIEWPORT.height / 3) {
+                    INPUT.setControlState(CONTROLS.UP, true);
+                }
+                else if (prevRightTouchY != null) {
+                    if (y < prevRightTouchY - tolerance) {
+                        INPUT.setControlState(CONTROLS.UP, true);
+                    }
+                }
+                prevRightTouchY = y;
+            }
+        }
+    }
+
+        /*
         if (INPUT.isPointerDown()) {
             console.log((INPUT.getPointerX()) + " > " + (VIEWPORT.width / 5 * 2) + ", " + (VIEWPORT.width / 5 * 4));
             if ((INPUT.getPointerX()) < (VIEWPORT.width / 5 * 2)) {
@@ -764,45 +838,13 @@ function handleInput(){
                 INPUT.setControlState(CONTROLS.RIGHT, false);
             }
 
-            if ((INPUT.getPointerY()) < (VIEWPORT.height / 5 * 1)){
+            if ((INPUT.getPointerY()) < (VIEWPORT.height / 5)){
                 INPUT.setControlState(CONTROLS.UP, true);
             }
             else {
                 INPUT.setControlState(CONTROLS.UP, false);
             }
-
-            /*
-             var x;
-             var speed = 0;
-
-             if(leftTouch){
-             if (leftTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5) {
-             x = leftTouch.pageX * INPUT._Ratio;
-             speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
-
-             Player.move(speed);
-             }
-             else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
-             x = leftTouch.pageX * INPUT._Ratio;
-             speed = (x - VIEWPORT.width / 5) / (VIEWPORT.width / 5);
-
-             Player.move(speed);
-             }
-             }
-
-             if(rightTouch){
-             if (rightTouch.pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
-             x = rightTouch.pageX * INPUT._Ratio;
-
-             //Player.move();
-             }
-             else if (leftTouch.pageX * INPUT._Ratio < VIEWPORT.width / 5) {
-             x = rightTouch.pageX * INPUT._Ratio;
-
-             //Player.move((x - VIEWPORT.width / 5) / VIEWPORT.width / 5 * 2);
-             }
-             }
-             */
+        /*
         }
         else {
             //No input
@@ -841,17 +883,19 @@ function handleInput(){
     if(INPUT.isKeyDown(CONTROLS.UP)){
         Player.jump();
     }
-
-    if(INPUT.isKeyDown(CONTROLS.LEFT)){
-        Player.move(-1);
-    }
-    else if(INPUT.isKeyDown(CONTROLS.RIGHT)){
-        Player.move(1);
-    }
-    else {
-        Player.move(0);
+    if (INPUT.isTouchDevice == false) {
+        if(INPUT.isKeyDown(CONTROLS.LEFT)){
+            Player.move(-1);
+        }
+        else if(INPUT.isKeyDown(CONTROLS.RIGHT)){
+            Player.move(1);
+        }
+        else {
+            Player.move(0);
+        }
     }
 }
+
 
 var GameConditions; // This is a function that is set in the level.js file.
 
