@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# Currently unused. by adding this the site will not update unless
+# forced to do so.
+/index.htm
+/textures/PlayerSheet.png
+/js/input.js
+/js/level.js
+/js/physeng.js
+/js/solace.js
+
+NETWORK:
+*

@@ -1,12 +1,4 @@
 // Insert game generation code here...
-/*
-var count = 0;
-var count2 = 0;
-var jumpCount = 0;
-var frameTick = 6;
-var frameX = 0;
-var frameY = 0;
-*/
 
 GameConditions = function() {
     if (Player.x > 300 && shoot == false) {
@@ -16,6 +8,12 @@ GameConditions = function() {
     }
     if (Player.touching.bottom == floor) {
         Player.die();
+    }
+    if (proj.touching.bottom == floor) {
+        proj.type = Entity.PHANTOM;
+        if (proj.vy < 0) {
+            proj.vy = proj.vy * -1;
+        }
     }
 };
 
