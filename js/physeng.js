@@ -306,14 +306,27 @@ var DrawFrame = function() {
             else
             {
                 if (item == Player) {
-                    // Will need to be modified
-                    trail(item, 128, 0.3, 0.1);
-                    trail(item, 256, 0.2, 0.2);
-                    trail(item, 512, 0.1, 0.3);
 
+                    var trailPlayer = function(texture, speed, alpha, offset) {
+                        if (Math.abs(item.vx) + Math.abs(item.vy) > speed) {
+
+                            view.globalAlpha = alpha;
+
+                            var offsetx = item.vx * offset;
+                            var offsety = item.vy * offset;
+
+                            view.drawImage(texture, Player.frame.x, Player.frame.y, Player.width, Player.height, xPos - offsetx, yPos - offsety, item.width, item.height);
+
+                            view.globalAlpha = 1.0;
+                        }
+                    };
                     var texture = new Image();
-
                     texture.src = Player.sheet;
+
+                    trailPlayer(texture, 128, 0.3, 0.1);
+                    trailPlayer(texture, 256, 0.2, 0.2);
+                    trailPlayer(texture, 512, 0.1, 0.3);
+
                     //alert(texture.src);
                     view.drawImage(texture, Player.frame.x, Player.frame.y, Player.width, Player.height, xPos, yPos, Player.width, Player.height);
                 }
@@ -769,26 +782,23 @@ function handleInput(){
                 leftTouch = touches[i];
                 prevLeftTouch = true;
             }
+            else if (touches[i].pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
+                rightTouch = touches[i];
+            }
             else if (touches[i].pageX * INPUT._Ratio < VIEWPORT.width / 5 * 3 && prevLeftTouch) {
                 leftTouch = touches[i];
             }
             else {
-                leftTouch = null;
-                prevLeftTouch = false;
-            }
-
-            if (touches[i].pageX * INPUT._Ratio > VIEWPORT.width / 5 * 3) {
-                rightTouch = touches[i];
-            }
-            else {
                 rightTouch = null;
                 prevRightTouchY = null;
+                leftTouch = null;
+                prevLeftTouch = false;
             }
 
             var x;
             var y;
             var speed = 0;
-            var tolerance = 20;
+            var tolerance = 30;
 
             if(leftTouch){
                 x = leftTouch.pageX * INPUT._Ratio;
@@ -810,47 +820,22 @@ function handleInput(){
             if(rightTouch){
                 y = rightTouch.pageY * INPUT._Ratio;
                 if (y < VIEWPORT.height / 3) {
-                    INPUT.setControlState(CONTROLS.UP, true);
+                    Player.jump();
                 }
                 else if (prevRightTouchY != null) {
                     if (y < prevRightTouchY - tolerance) {
-                        INPUT.setControlState(CONTROLS.UP, true);
+                        Player.jump();
                     }
+                }
+                else {
+                    INPUT.setControlState(CONTROLS.USE, true);
                 }
                 prevRightTouchY = y;
             }
-        }
-    }
 
-        /*
-        if (INPUT.isPointerDown()) {
-            console.log((INPUT.getPointerX()) + " > " + (VIEWPORT.width / 5 * 2) + ", " + (VIEWPORT.width / 5 * 4));
-            if ((INPUT.getPointerX()) < (VIEWPORT.width / 5 * 2)) {
-                INPUT.setControlState(CONTROLS.LEFT, true);
-                INPUT.setControlState(CONTROLS.RIGHT, false);
+            if (rightTouch && leftTouch) {
+                console.log("Both left and right touches!");
             }
-            else if ((INPUT.getPointerX()) > (VIEWPORT.width / 5 * 4)) {
-                INPUT.setControlState(CONTROLS.RIGHT, true);
-                INPUT.setControlState(CONTROLS.LEFT, false);
-            }
-            else {
-                INPUT.setControlState(CONTROLS.LEFT, false);
-                INPUT.setControlState(CONTROLS.RIGHT, false);
-            }
-
-            if ((INPUT.getPointerY()) < (VIEWPORT.height / 5)){
-                INPUT.setControlState(CONTROLS.UP, true);
-            }
-            else {
-                INPUT.setControlState(CONTROLS.UP, false);
-            }
-        /*
-        }
-        else {
-            //No input
-            INPUT.setControlState(CONTROLS.LEFT, false);
-            INPUT.setControlState(CONTROLS.RIGHT, false);
-            INPUT.setControlState(CONTROLS.UP, false);
         }
     }
 
@@ -880,10 +865,11 @@ function handleInput(){
     */
 
     //Keyboard events
-    if(INPUT.isKeyDown(CONTROLS.UP)){
-        Player.jump();
-    }
     if (INPUT.isTouchDevice == false) {
+        // Oddly, keys stay down on iOS...
+        if(INPUT.isKeyDown(CONTROLS.UP)){
+            Player.jump();
+        }
         if(INPUT.isKeyDown(CONTROLS.LEFT)){
             Player.move(-1);
         }
